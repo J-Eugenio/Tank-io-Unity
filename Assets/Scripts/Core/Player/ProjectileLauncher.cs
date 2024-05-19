@@ -51,7 +51,7 @@ public class ProjectileLauncher : NetworkBehaviour
         Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
 
         if(projectileInstance.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb)) {
-            rb.velocity = rb.transform.forward * projectileSpeed;
+            rb.velocity = rb.transform.up * projectileSpeed;
         }
     }
 
@@ -63,7 +63,7 @@ public class ProjectileLauncher : NetworkBehaviour
         Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
 
         if(projectileInstance.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb)) {
-            rb.velocity = rb.transform.forward * projectileSpeed;
+            rb.velocity = rb.transform.up * projectileSpeed;
         }
         
         SpawnDummyProjectileClientRpc(spawnPos, direction);
@@ -87,8 +87,11 @@ public class ProjectileLauncher : NetworkBehaviour
 
         if (!IsOwner) return;
         if (!shouldFire) return;
+        if(Time.time < (1 / fireRate) + previousFireTime) return;
+        
         PrimaryFireServerRpc(projectileSpawnPoint.position, projectileSpawnPoint.up);
         SpawnDummyProjectile(projectileSpawnPoint.position, projectileSpawnPoint.up);
+        previousFireTime = Time.time;
     }
 
 }
